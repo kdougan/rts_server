@@ -26,31 +26,32 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import os
-import asyncio
+<pre><code class="python">import asyncio
 import itertools
+import os
 import time
 from dataclasses import asdict
+from typing import Any
 
 import orjson
 import websockets
+from dotenv import load_dotenv
+from websockets.server import WebSocketServer
 from websockets.server import WebSocketServerProtocol
 
 from rts_server.src.lib import GameState
-
-from dotenv import load_dotenv
 
 load_dotenv()
 
 
 class GameServer:
-    tick_rate = int(os.getenv(&#39;TICK_RATE&#39;, 24))
-    game_state = GameState()
-    connections = set()
+    tick_rate: int = int(os.getenv(&#39;TICK_RATE&#39;, 24))
+    game_state: GameState = GameState()
+    connections: set = set()
 
     async def start(self):
         &#39;&#39;&#39;Starts the server and game loop.&#39;&#39;&#39;
-        server = await websockets.serve(  # type: ignore
+        server: WebSocketServer = await websockets.serve(  # type: ignore
             self.handle_client, &#39;localhost&#39;, 8765)
         print(&#39;Server started at ws://localhost:8765&#39;)
 
@@ -65,11 +66,11 @@ class GameServer:
             path (str):
                 The path of the client.
         &#39;&#39;&#39;
-        player_id = self.register_player(websocket)
+        player_id: int = self.register_player(websocket)
         await self.send_message(websocket, asdict(self.game_state))
         try:
             async for message in websocket:
-                data = orjson.loads(message)
+                data: dict[str, Any] = orjson.loads(message)
                 self.process_client_message(player_id, data)
         finally:
             self.unregister_player(websocket)
@@ -84,7 +85,7 @@ class GameServer:
         Returns:
             int: The player id.
         &#39;&#39;&#39;
-        player_id = len(self.connections) + 1
+        player_id: int = len(self.connections) + 1
         self.connections.add(websocket)
         return player_id
 
@@ -92,7 +93,7 @@ class GameServer:
         &#39;&#39;&#39;Unregisters a player from the game.
 
         Args:
-            websocket (WebSocketServerProtocol):
+            websocket (WebSocketServerProtocol):s
                 The player connection.
         &#39;&#39;&#39;
         if websocket.id in self.game_state.players:
@@ -125,10 +126,11 @@ class GameServer:
     async def game_loop(self):
         &#34;&#34;&#34;The game loop.
         &#34;&#34;&#34;
-        moon = itertools.cycle([&#39;🌑&#39;, &#39;🌒&#39;, &#39;🌓&#39;, &#39;🌔&#39;, &#39;🌕&#39;, &#39;🌖&#39;, &#39;🌗&#39;, &#39;🌘&#39;])
+        moon: itertools.cycle = itertools.cycle(
+            [&#39;🌑&#39;, &#39;🌒&#39;, &#39;🌓&#39;, &#39;🌔&#39;, &#39;🌕&#39;, &#39;🌖&#39;, &#39;🌗&#39;, &#39;🌘&#39;])
         while True:
             print(next(moon), end=&#39;\r&#39;)
-            current_time = int(time.time())
+            current_time: int = int(time.time())
             await self.update_game_state(current_time)
             await self.broadcast_game_state()
             await asyncio.sleep(1/self.tick_rate)
@@ -167,13 +169,13 @@ class GameServer:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class GameServer:
-    tick_rate = int(os.getenv(&#39;TICK_RATE&#39;, 24))
-    game_state = GameState()
-    connections = set()
+    tick_rate: int = int(os.getenv(&#39;TICK_RATE&#39;, 24))
+    game_state: GameState = GameState()
+    connections: set = set()
 
     async def start(self):
         &#39;&#39;&#39;Starts the server and game loop.&#39;&#39;&#39;
-        server = await websockets.serve(  # type: ignore
+        server: WebSocketServer = await websockets.serve(  # type: ignore
             self.handle_client, &#39;localhost&#39;, 8765)
         print(&#39;Server started at ws://localhost:8765&#39;)
 
@@ -188,11 +190,11 @@ class GameServer:
             path (str):
                 The path of the client.
         &#39;&#39;&#39;
-        player_id = self.register_player(websocket)
+        player_id: int = self.register_player(websocket)
         await self.send_message(websocket, asdict(self.game_state))
         try:
             async for message in websocket:
-                data = orjson.loads(message)
+                data: dict[str, Any] = orjson.loads(message)
                 self.process_client_message(player_id, data)
         finally:
             self.unregister_player(websocket)
@@ -207,7 +209,7 @@ class GameServer:
         Returns:
             int: The player id.
         &#39;&#39;&#39;
-        player_id = len(self.connections) + 1
+        player_id: int = len(self.connections) + 1
         self.connections.add(websocket)
         return player_id
 
@@ -215,7 +217,7 @@ class GameServer:
         &#39;&#39;&#39;Unregisters a player from the game.
 
         Args:
-            websocket (WebSocketServerProtocol):
+            websocket (WebSocketServerProtocol):s
                 The player connection.
         &#39;&#39;&#39;
         if websocket.id in self.game_state.players:
@@ -248,10 +250,11 @@ class GameServer:
     async def game_loop(self):
         &#34;&#34;&#34;The game loop.
         &#34;&#34;&#34;
-        moon = itertools.cycle([&#39;🌑&#39;, &#39;🌒&#39;, &#39;🌓&#39;, &#39;🌔&#39;, &#39;🌕&#39;, &#39;🌖&#39;, &#39;🌗&#39;, &#39;🌘&#39;])
+        moon: itertools.cycle = itertools.cycle(
+            [&#39;🌑&#39;, &#39;🌒&#39;, &#39;🌓&#39;, &#39;🌔&#39;, &#39;🌕&#39;, &#39;🌖&#39;, &#39;🌗&#39;, &#39;🌘&#39;])
         while True:
             print(next(moon), end=&#39;\r&#39;)
-            current_time = int(time.time())
+            current_time: int = int(time.time())
             await self.update_game_state(current_time)
             await self.broadcast_game_state()
             await asyncio.sleep(1/self.tick_rate)
@@ -272,15 +275,15 @@ class GameServer:
 </details>
 <h3>Class variables</h3>
 <dl>
-<dt id="rts_server.src.main.GameServer.connections"><code class="name">var <span class="ident">connections</span></code></dt>
+<dt id="rts_server.src.main.GameServer.connections"><code class="name">var <span class="ident">connections</span> : set</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="rts_server.src.main.GameServer.game_state"><code class="name">var <span class="ident">game_state</span></code></dt>
+<dt id="rts_server.src.main.GameServer.game_state"><code class="name">var <span class="ident">game_state</span> : <a title="rts_server.src.lib.GameState" href="lib.html#rts_server.src.lib.GameState">GameState</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="rts_server.src.main.GameServer.tick_rate"><code class="name">var <span class="ident">tick_rate</span></code></dt>
+<dt id="rts_server.src.main.GameServer.tick_rate"><code class="name">var <span class="ident">tick_rate</span> : int</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -314,10 +317,11 @@ class GameServer:
 <pre><code class="python">async def game_loop(self):
     &#34;&#34;&#34;The game loop.
     &#34;&#34;&#34;
-    moon = itertools.cycle([&#39;🌑&#39;, &#39;🌒&#39;, &#39;🌓&#39;, &#39;🌔&#39;, &#39;🌕&#39;, &#39;🌖&#39;, &#39;🌗&#39;, &#39;🌘&#39;])
+    moon: itertools.cycle = itertools.cycle(
+        [&#39;🌑&#39;, &#39;🌒&#39;, &#39;🌓&#39;, &#39;🌔&#39;, &#39;🌕&#39;, &#39;🌖&#39;, &#39;🌗&#39;, &#39;🌘&#39;])
     while True:
         print(next(moon), end=&#39;\r&#39;)
-        current_time = int(time.time())
+        current_time: int = int(time.time())
         await self.update_game_state(current_time)
         await self.broadcast_game_state()
         await asyncio.sleep(1/self.tick_rate)</code></pre>
@@ -346,11 +350,11 @@ The path of the client.</p></div>
         path (str):
             The path of the client.
     &#39;&#39;&#39;
-    player_id = self.register_player(websocket)
+    player_id: int = self.register_player(websocket)
     await self.send_message(websocket, asdict(self.game_state))
     try:
         async for message in websocket:
-            data = orjson.loads(message)
+            data: dict[str, Any] = orjson.loads(message)
             self.process_client_message(player_id, data)
     finally:
         self.unregister_player(websocket)</code></pre>
@@ -409,7 +413,7 @@ The player connection.</p>
     Returns:
         int: The player id.
     &#39;&#39;&#39;
-    player_id = len(self.connections) + 1
+    player_id: int = len(self.connections) + 1
     self.connections.add(websocket)
     return player_id</code></pre>
 </details>
@@ -451,7 +455,7 @@ The message to send.</p></div>
 </summary>
 <pre><code class="python">async def start(self):
     &#39;&#39;&#39;Starts the server and game loop.&#39;&#39;&#39;
-    server = await websockets.serve(  # type: ignore
+    server: WebSocketServer = await websockets.serve(  # type: ignore
         self.handle_client, &#39;localhost&#39;, 8765)
     print(&#39;Server started at ws://localhost:8765&#39;)
 
@@ -464,7 +468,7 @@ The message to send.</p></div>
 <dd>
 <div class="desc"><p>Unregisters a player from the game.</p>
 <h2 id="args">Args</h2>
-<p>websocket (WebSocketServerProtocol):
+<p>websocket (WebSocketServerProtocol):s
 The player connection.</p></div>
 <details class="source">
 <summary>
@@ -474,7 +478,7 @@ The player connection.</p></div>
     &#39;&#39;&#39;Unregisters a player from the game.
 
     Args:
-        websocket (WebSocketServerProtocol):
+        websocket (WebSocketServerProtocol):s
             The player connection.
     &#39;&#39;&#39;
     if websocket.id in self.game_state.players:
