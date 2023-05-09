@@ -12,6 +12,7 @@ from websockets.server import WebSocketServer
 from websockets.server import WebSocketServerProtocol
 
 from rts_server.src.lib import GameState
+from rts_server.src.lib import Player
 
 load_dotenv()
 
@@ -59,6 +60,8 @@ class GameServer:
         '''
         player_id: int = len(self.connections) + 1
         self.connections.add(websocket)
+        self.game_state.players[player_id] = Player(
+            id=player_id, name=f'Player{player_id}')
         return player_id
 
     def unregister_player(self, websocket: WebSocketServerProtocol):

@@ -2,11 +2,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from dataclasses import field
+from typing import Any
 
 
 @dataclass(slots=True)
 class GameState:
     players: dict[int, Player] = field(default_factory=dict)
+    board: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(slots=True)
