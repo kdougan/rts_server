@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "rts_server"
+version = "0.1.0"
+description = "A simple, extendable real-time strategy multiplayer game server in Python."
+authors = ["Kyle Dougan <kdougan@gmail.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+orjson = "^3.8.11"
+msgpack = "^1.0.5"
+websockets = "^11.0.3"
+python-dotenv = "^1.0.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+autopep8 = "^2.0.2"
+pylint = "^2.17.3"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
